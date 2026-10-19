@@ -229,7 +229,7 @@ export default function App() {
   const activeIncident = currentIncidentData?.incident || incidents.find((i) => i.id === selectedIncidentId);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#F4EFE5] text-[#332B20] antialiased select-none font-mono">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F4F8FC] text-[#17324D] antialiased">
       {/* Left Sidebar */}
       <Navigation
         currentTab={currentTab}
@@ -239,7 +239,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F4EFE5]">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F4F8FC]">
         {/* Top Navbar */}
         <TopNav
           currentTab={currentTab}
@@ -261,10 +261,10 @@ export default function App() {
           <div
             className={`px-6 py-2 border-b text-xs font-mono flex items-center justify-between shrink-0 ${
               bannerNotice.type === 'success'
-                ? 'bg-[#718777]/15 border-[#718777]/40 text-[#4F6555]'
+                ? 'bg-[#25856B]/15 border-[#25856B]/40 text-[#1E6B58]'
                 : bannerNotice.type === 'warn'
-                ? 'bg-[#D4A15D]/15 border-[#D4A15D]/40 text-[#8A6030]'
-                : 'bg-[#C74F46]/15 border-[#C74F46]/40 text-[#A73832]'
+                ? 'bg-[#D9A441]/15 border-[#D9A441]/40 text-[#93691F]'
+                : 'bg-[#D95757]/15 border-[#D95757]/40 text-[#B33E3E]'
             }`}
           >
             <span>{bannerNotice.message}</span>
@@ -278,7 +278,7 @@ export default function App() {
         )}
 
         {/* Scrollable View Container */}
-        <main className="flex-1 overflow-y-auto p-6 bg-[#F4EFE5]">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#F4F8FC]">
           {currentTab === 'overview' && (
             <OverviewView
               incidents={incidents}
@@ -292,6 +292,7 @@ export default function App() {
               }}
               onNavigateTab={setCurrentTab}
               onOpenApproval={(proposal) => setSelectedProposalForModal(proposal)}
+              onOpenCreateIncident={() => setIsNewIncidentOpen(true)}
             />
           )}
 
@@ -322,14 +323,14 @@ export default function App() {
 
           {currentTab === 'logs' && (
             <div className="evidence-pattern h-[calc(100vh-140px)] flex flex-col space-y-3 font-mono">
-              <div className="flex items-center justify-between text-xs text-[#756B5D]">
+              <div className="flex items-center justify-between text-xs text-[#718096]">
                 <div>
-                  LOG STREAM FOR INCIDENT: <span className="text-[#332B20] font-bold">{selectedIncidentId}</span>
+                  LOG STREAM FOR INCIDENT: <span className="text-[#17324D] font-bold">{selectedIncidentId}</span>
                 </div>
                 {highlightedLogIds.length > 0 && (
                   <button
                     onClick={() => setHighlightedLogIds([])}
-                    className="text-[#985333] hover:underline"
+                    className="text-[#1E5E9B] hover:underline"
                   >
                     Clear Filtered Evidence Highlight
                   </button>

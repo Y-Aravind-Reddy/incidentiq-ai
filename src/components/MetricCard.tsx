@@ -16,23 +16,23 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   icon,
 }) => {
   const statusColors = {
-    nominal: 'text-[#4F6555] border-[#718777]/30',
-    warning: 'text-[#8A6030] border-[#D4A15D]/30',
-    critical: 'text-[#A73832] border-[#C74F46]/30',
-    neutral: 'text-[#655D51] border-[#D4C1A1]',
+    nominal: 'text-[#1E6B58] border-[#25856B]/30',
+    warning: 'text-[#93691F] border-[#D9A441]/30',
+    critical: 'text-[#B33E3E] border-[#D95757]/30',
+    neutral: 'text-[#4A6176] border-[#E1EAF3]',
   };
 
   return (
-    <div className={`p-4 rounded border bg-[#FAF6EE] relative overflow-hidden transition-all duration-150 hover:border-[#B86B43]/40 ${statusColors[status]}`}>
-      <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#756B5D] mb-2">
+    <div className={`p-4 rounded border bg-[#FFFFFF] relative overflow-hidden transition-all duration-150 hover:border-[#2677C9]/40 ${statusColors[status]}`}>
+      <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#718096] mb-2">
         <span>{label}</span>
-        {icon && <span className="text-[#655D51]">{icon}</span>}
+        {icon && <span className="text-[#4A6176]">{icon}</span>}
       </div>
-      <div className="text-2xl font-semibold tracking-tight text-[#332B20] font-mono">
+      <div className="text-2xl font-semibold tracking-tight text-[#17324D] font-mono">
         {value}
       </div>
       {subValue && (
-        <div className="mt-1 text-xs text-[#756B5D] font-mono truncate">
+        <div className="mt-1 text-xs text-[#718096] font-mono truncate">
           {subValue}
         </div>
       )}

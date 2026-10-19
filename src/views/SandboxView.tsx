@@ -32,8 +32,8 @@ export const SandboxView: React.FC<SandboxViewProps> = ({
     <div className="evidence-pattern space-y-4 font-mono">
       {/* Proposal Selector if multiple */}
       {proposals.length > 1 && (
-        <div className="p-3 bg-[#FAF6EE] border border-[#D4C1A1] rounded flex items-center space-x-3 text-xs">
-          <span className="text-[#756B5D]">Select Proposal:</span>
+        <div className="p-3 bg-[#FFFFFF] border border-[#E1EAF3] rounded flex items-center space-x-3 text-xs">
+          <span className="text-[#718096]">Select Proposal:</span>
           <div className="flex flex-wrap gap-2">
             {proposals.map((p) => (
               <button
@@ -41,8 +41,8 @@ export const SandboxView: React.FC<SandboxViewProps> = ({
                 onClick={() => onSelectProposal(p.id)}
                 className={`px-2.5 py-1 rounded border text-xs ${
                   p.id === activeProposal?.id
-                    ? 'bg-[#EDE4D4] text-[#985333] border-[#B86B43]'
-                    : 'bg-[#F4EFE5] text-[#655D51] border-[#D4C1A1]'
+                    ? 'bg-[#EAF4FF] text-[#1E5E9B] border-[#2677C9]'
+                    : 'bg-[#F4F8FC] text-[#4A6176] border-[#E1EAF3]'
                 }`}
               >
                 {p.id} — {p.action_type} ({p.status})

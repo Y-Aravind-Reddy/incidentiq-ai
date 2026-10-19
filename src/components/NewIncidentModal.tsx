@@ -44,29 +44,29 @@ export const NewIncidentModal: React.FC<NewIncidentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#332B20]/55 backdrop-blur-xs p-4 font-mono">
-      <div className="bg-[#FAF6EE] border border-[#D4C1A1] rounded-lg w-full max-w-lg shadow-2xl overflow-hidden">
-        <div className="p-4 border-b border-[#D4C1A1] flex items-center justify-between bg-[#F4EFE5]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17324D]/55 backdrop-blur-xs p-4 font-mono">
+      <div className="bg-[#FFFFFF] border border-[#E1EAF3] rounded-lg w-full max-w-lg shadow-2xl overflow-hidden">
+        <div className="p-4 border-b border-[#E1EAF3] flex items-center justify-between bg-[#F4F8FC]">
           <div className="flex items-center space-x-2">
-            <AlertTriangle className="w-4 h-4 text-[#985333]" />
-            <h3 className="text-sm font-semibold text-[#332B20]">
+            <AlertTriangle className="w-4 h-4 text-[#1E5E9B]" />
+            <h3 className="text-sm font-semibold text-[#17324D]">
               Inject Synthetic Incident into Sandbox
             </h3>
           </div>
-          <button onClick={onClose} className="text-[#756B5D] hover:text-[#332B20]">
+          <button onClick={onClose} className="text-[#718096] hover:text-[#17324D]">
             ✕
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
           {error && (
-            <div className="p-2.5 bg-[#C74F46]/15 border border-[#C74F46]/40 text-[#A73832] rounded">
+            <div className="p-2.5 bg-[#D95757]/15 border border-[#D95757]/40 text-[#B33E3E] rounded">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-[#756B5D] uppercase font-bold mb-1">
+            <label className="block text-[#718096] uppercase font-bold mb-1">
               Incident Title
             </label>
             <input
@@ -75,13 +75,13 @@ export const NewIncidentModal: React.FC<NewIncidentModalProps> = ({
               placeholder="e.g., Redis Connection Timeout Surge on Session Cache"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-[#F4EFE5] border border-[#D4C1A1] rounded px-3 py-1.5 text-xs text-[#332B20] placeholder-[#756B5D] focus:outline-none focus:border-[#B86B43]"
+              className="w-full bg-[#F4F8FC] border border-[#E1EAF3] rounded px-3 py-1.5 text-xs text-[#17324D] placeholder-[#718096] focus:outline-none focus:border-[#2677C9]"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[#756B5D] uppercase font-bold mb-1">
+              <label className="block text-[#718096] uppercase font-bold mb-1">
                 Target Service
               </label>
               <input
@@ -89,18 +89,18 @@ export const NewIncidentModal: React.FC<NewIncidentModalProps> = ({
                 required
                 value={serviceName}
                 onChange={(e) => setServiceName(e.target.value)}
-                className="w-full bg-[#F4EFE5] border border-[#D4C1A1] rounded px-3 py-1.5 text-xs text-[#332B20] focus:outline-none focus:border-[#B86B43]"
+                className="w-full bg-[#F4F8FC] border border-[#E1EAF3] rounded px-3 py-1.5 text-xs text-[#17324D] focus:outline-none focus:border-[#2677C9]"
               />
             </div>
 
             <div>
-              <label className="block text-[#756B5D] uppercase font-bold mb-1">
+              <label className="block text-[#718096] uppercase font-bold mb-1">
                 Severity
               </label>
               <select
                 value={severity}
                 onChange={(e) => setSeverity(e.target.value as Severity)}
-                className="w-full bg-[#F4EFE5] border border-[#D4C1A1] rounded px-3 py-1.5 text-xs text-[#332B20] focus:outline-none focus:border-[#B86B43]"
+                className="w-full bg-[#F4F8FC] border border-[#E1EAF3] rounded px-3 py-1.5 text-xs text-[#17324D] focus:outline-none focus:border-[#2677C9]"
               >
                 <option value="critical">CRITICAL</option>
                 <option value="high">HIGH</option>
@@ -111,7 +111,7 @@ export const NewIncidentModal: React.FC<NewIncidentModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-[#756B5D] uppercase font-bold mb-1">
+            <label className="block text-[#718096] uppercase font-bold mb-1">
               Description & Symptoms
             </label>
             <textarea
@@ -120,22 +120,22 @@ export const NewIncidentModal: React.FC<NewIncidentModalProps> = ({
               placeholder="Describe symptoms, error codes, saturation triggers, and customer impact..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-[#F4EFE5] border border-[#D4C1A1] rounded p-2.5 text-xs text-[#332B20] placeholder-[#756B5D] focus:outline-none focus:border-[#B86B43]"
+              className="w-full bg-[#F4F8FC] border border-[#E1EAF3] rounded p-2.5 text-xs text-[#17324D] placeholder-[#718096] focus:outline-none focus:border-[#2677C9]"
             />
           </div>
 
-          <div className="pt-3 border-t border-[#D4C1A1] flex justify-end space-x-3">
+          <div className="pt-3 border-t border-[#E1EAF3] flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 bg-[#EDE4D4] text-[#655D51] rounded hover:text-[#332B20]"
+              className="px-3 py-1.5 bg-[#EAF4FF] text-[#4A6176] rounded hover:text-[#17324D]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-1.5 bg-[#B86B43] hover:bg-[#985333] text-[#332B20] font-bold rounded flex items-center space-x-1.5 disabled:opacity-50"
+              className="px-4 py-1.5 bg-[#2677C9] hover:bg-[#1E5E9B] text-white font-bold rounded flex items-center space-x-1.5 disabled:opacity-50"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>{isSubmitting ? 'Injecting...' : 'Inject Incident'}</span>

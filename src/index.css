@@ -3,70 +3,84 @@
 @layer base {
   :root {
     color-scheme: light;
-    --color-champagne: #F4EFE5;
-    --color-sand: #EDE4D4;
-    --color-ivory: #FAF6EE;
-    --color-sand-border: #D4C1A1;
-    --color-copper: #B86B43;
-    --color-amber: #D4A15D;
-    --color-sage: #718777;
-    --color-ink: #332B20;
-    --color-muted: #655D51;
-    --color-critical: #C74F46;
-    --bg-graphite: #F4EFE5;
-    --bg-charcoal: #FAF6EE;
-    --bg-elevated: #EDE4D4;
-    --bg-raised: #E4D8C4;
-    --border-graphite: #D4C1A1;
-    --border-subtle: #D4C1A1;
-    --accent-orange: #B86B43;
-    --accent-copper: #985333;
-    --accent-amber: #D4A15D;
-    --accent-soft-amber: #8A6030;
-    --accent-teal: #718777;
-    --accent-deep-teal: #4F6555;
-    --text-primary: #332B20;
-    --text-secondary: #655D51;
-    --text-muted: #756B5D;
-    --sev-critical: #C74F46;
-    --sev-high: #B86B43;
-    --sev-med: #D4A15D;
-    --sev-low: #718777;
+    --color-ice: #F4F8FC;
+    --color-surface: #FFFFFF;
+    --color-ice-soft: #EAF4FF;
+    --color-blue-mist: #D9ECFF;
+    --color-primary: #2677C9;
+    --color-primary-deep: #1E5E9B;
+    --color-champagne: #D9A441;
+    --color-champagne-soft: #FFF5DF;
+    --color-border: #E1EAF3;
+    --color-success: #25856B;
+    --color-warning: #E5A23C;
+    --color-critical: #D95757;
+    --color-text: #17324D;
+    --color-text-secondary: #4A6176;
+    --color-muted: #718096;
+    --bg-graphite: #F4F8FC;
+    --bg-charcoal: #FFFFFF;
+    --bg-elevated: #EAF4FF;
+    --bg-raised: #D9ECFF;
+    --border-graphite: #E1EAF3;
+    --border-subtle: #E1EAF3;
+    --accent-orange: #2677C9;
+    --accent-copper: #1E5E9B;
+    --accent-amber: #D9A441;
+    --accent-soft-amber: #93691F;
+    --accent-teal: #25856B;
+    --accent-deep-teal: #1E6B58;
+    --text-primary: #17324D;
+    --text-secondary: #4A6176;
+    --text-muted: #718096;
+    --sev-critical: #D95757;
+    --sev-high: #C77535;
+    --sev-med: #D9A441;
+    --sev-low: #718096;
   }
+
+  * { box-sizing: border-box; }
 
   body {
-    background-color: #F4EFE5;
-    color: #332B20;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    background-color: var(--color-ice);
+    color: var(--color-text);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow-x: hidden;
+    font-feature-settings: "ss01" on;
   }
 
-  code, pre, .font-mono {
-    font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  }
+  code, pre { font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 }
 
-/* Soft champagne and copper linework adds depth without competing with content. */
+/* Keep labels readable and modern while retaining mono treatment for code and evidence. */
+.font-mono:not(code):not(pre) { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
 .dashboard-hero {
   background:
-    radial-gradient(ellipse at 88% 20%, rgb(212 161 93 / 18%), transparent 34%),
-    linear-gradient(112deg, #FAF6EE 0%, #F2E8D6 54%, #EDE0CB 100%);
+    radial-gradient(ellipse at 83% 18%, rgb(217 164 65 / 18%), transparent 28%),
+    linear-gradient(112deg, #FFFFFF 0%, #EAF4FF 52%, #D9ECFF 100%);
+  box-shadow: 0 12px 32px rgb(23 50 77 / 5%);
 }
+
+main [class~="bg-[#FFFFFF]"] {
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgb(23 50 77 / 4%);
+}
+
+main button:not(:disabled) { min-height: 2rem; }
 
 .dashboard-hero::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.48;
-  background: repeating-radial-gradient(ellipse at 100% 108%, transparent 0 20px, rgb(184 107 67 / 18%) 21px 22px, transparent 23px 38px);
-  mask-image: linear-gradient(100deg, transparent 30%, #000 100%);
+  opacity: 0.58;
+  background: repeating-radial-gradient(ellipse at 100% 110%, transparent 0 19px, rgb(38 119 201 / 12%) 20px 21px, transparent 22px 37px);
+  mask-image: linear-gradient(100deg, transparent 28%, #000 100%);
 }
 
-.hero-orbit {
-  box-shadow: 0 0 0 18px rgb(212 161 93 / 5%), 0 0 0 38px rgb(184 107 67 / 4%);
-}
-
+.hero-orbit { box-shadow: 0 0 0 18px rgb(217 164 65 / 6%), 0 0 0 38px rgb(38 119 201 / 4%); }
 .hero-orbit-secondary { transform: rotate(-28deg) scaleX(1.2); }
 
 .sidebar-pattern::before {
@@ -74,56 +88,53 @@
   position: absolute;
   inset: 4.5rem 0 0;
   pointer-events: none;
-  opacity: 0.24;
+  opacity: 0.14;
   background-image:
-    radial-gradient(circle at 18px 20px, #B86B43 1.2px, transparent 1.8px),
-    radial-gradient(circle at 58px 48px, #D4A15D 1px, transparent 1.8px),
-    linear-gradient(28deg, transparent 49.5%, #D4C1A1 50%, transparent 50.5%),
-    linear-gradient(148deg, transparent 49.5%, #D4C1A1 50%, transparent 50.5%);
+    radial-gradient(circle at 18px 20px, #2677C9 1.2px, transparent 1.8px),
+    radial-gradient(circle at 58px 48px, #D9A441 1px, transparent 1.8px),
+    linear-gradient(28deg, transparent 49.5%, #E1EAF3 50%, transparent 50.5%),
+    linear-gradient(148deg, transparent 49.5%, #E1EAF3 50%, transparent 50.5%);
   background-size: 78px 72px;
   mask-image: linear-gradient(to bottom, #000, transparent 86%);
 }
-
 .sidebar-pattern > * { position: relative; z-index: 1; }
 
 .evidence-pattern {
   background-image:
-    radial-gradient(circle at 1px 1px, rgb(184 107 67 / 18%) 1px, transparent 1.5px),
-    linear-gradient(135deg, transparent 49.7%, rgb(212 161 93 / 11%) 50%, transparent 50.3%);
+    radial-gradient(circle at 1px 1px, rgb(38 119 201 / 12%) 1px, transparent 1.5px),
+    linear-gradient(135deg, transparent 49.7%, rgb(217 164 65 / 8%) 50%, transparent 50.3%);
   background-size: 38px 38px, 76px 76px;
   background-position: 0 0, 8px 4px;
 }
 
-button { border-radius: 0.5rem; }
-
-button, a, input, select, textarea { transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
-
-:focus-visible {
-  outline: 3px solid #985333;
-  outline-offset: 2px;
-}
-
+button { border-radius: 0.625rem; }
+button, a, input, select, textarea { transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
+button:not(:disabled):hover { transform: translateY(-1px); }
+:focus-visible { outline: 3px solid #1E5E9B; outline-offset: 2px; }
 button:disabled { cursor: not-allowed; }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #F4EFE5;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #D4C1A1;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #B86B43;
-}
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: #F4F8FC; }
+::-webkit-scrollbar-thumb { background: #B9CDE0; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #2677C9; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+@media (max-width: 760px) {
+  .sidebar-pattern { width: 4.25rem; }
+  .sidebar-pattern > div:first-child { justify-content: center; padding-inline: 0.5rem; }
+  .sidebar-pattern > div:first-child > div:last-child,
+  .sidebar-pattern > div:nth-child(2) span:last-child,
+  .sidebar-pattern nav button > div > span:last-child,
+  .sidebar-pattern nav button > span,
+  .sidebar-pattern > div:last-child { display: none; }
+  .sidebar-pattern nav { padding-inline: 0.4rem; }
+  .sidebar-pattern nav button { justify-content: center; padding-inline: 0.5rem; }
+  header { padding-inline: 0.75rem !important; }
+  header > div:first-child > span { display: none; }
+  header > div:last-child { gap: 0.4rem !important; }
+  header > div:last-child > button:last-child span,
+  header > div:last-child > button:nth-last-child(2) span { display: none; }
 }

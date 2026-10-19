@@ -57,11 +57,11 @@ export const TopNav: React.FC<TopNavProps> = ({
   };
 
   return (
-    <header className="h-14 bg-[#F4EFE5] border-b border-[#D4C1A1] px-6 flex items-center justify-between z-10 shrink-0">
+    <header className="h-14 bg-[#F4F8FC] border-b border-[#E1EAF3] px-6 flex items-center justify-between z-10 shrink-0">
       {/* Page Title & Breadcrumbs */}
       <div className="flex items-center space-x-3">
-        <span className="text-xs font-mono text-[#756B5D] uppercase tracking-wider">COMMAND /</span>
-        <h1 className="text-sm font-semibold text-[#332B20] font-mono tracking-tight">
+        <span className="text-xs font-mono text-[#718096] uppercase tracking-wider">COMMAND /</span>
+        <h1 className="text-sm font-semibold text-[#17324D] font-mono tracking-tight">
           {tabTitles[currentTab] || currentTab}
         </h1>
       </div>
@@ -70,15 +70,15 @@ export const TopNav: React.FC<TopNavProps> = ({
       <div className="flex items-center space-x-3">
         {/* Global Incident Quick Selector */}
         <div className="relative">
-          <div className="flex items-center bg-[#FAF6EE] border border-[#D4C1A1] rounded px-2.5 py-1 text-xs font-mono text-[#332B20]">
-            <Server className="w-3.5 h-3.5 mr-2 text-[#985333]" />
+          <div className="flex items-center bg-[#FFFFFF] border border-[#E1EAF3] rounded px-2.5 py-1 text-xs font-mono text-[#17324D]">
+            <Server className="w-3.5 h-3.5 mr-2 text-[#1E5E9B]" />
             <select
               value={selectedIncidentId}
               onChange={(e) => onSelectIncident(e.target.value)}
-              className="bg-transparent text-[#332B20] focus:outline-none cursor-pointer pr-4"
+              className="bg-transparent text-[#17324D] focus:outline-none cursor-pointer pr-4"
             >
               {incidents.map((inc) => (
-                <option key={inc.id} value={inc.id} className="bg-[#FAF6EE] text-[#332B20]">
+                <option key={inc.id} value={inc.id} className="bg-[#FFFFFF] text-[#17324D]">
                   {inc.id} — {inc.service_name} ({inc.severity.toUpperCase()})
                 </option>
               ))}
@@ -87,22 +87,22 @@ export const TopNav: React.FC<TopNavProps> = ({
         </div>
 
         {/* Environment Badge */}
-        <div className="flex items-center space-x-1 px-2.5 py-1 rounded bg-[#D4A15D]/10 border border-[#D4A15D]/40 text-[#8A6030] text-xs font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#D4A15D] animate-pulse mr-1" />
+        <div className="flex items-center space-x-1 px-2.5 py-1 rounded bg-[#D9A441]/10 border border-[#D9A441]/40 text-[#93691F] text-xs font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D9A441] animate-pulse mr-1" />
           <span>SANDBOX</span>
         </div>
 
         {/* Approvals Bell Alert */}
         <button
           onClick={onOpenApprovals}
-          className={`relative p-1.5 rounded border border-[#D4C1A1] bg-[#FAF6EE] text-[#655D51] hover:text-[#332B20] hover:border-[#B86B43] transition-colors ${
-            pendingApprovalsCount > 0 ? 'border-[#D4A15D]/60 text-[#8A6030]' : ''
+          className={`relative p-1.5 rounded border border-[#E1EAF3] bg-[#FFFFFF] text-[#4A6176] hover:text-[#17324D] hover:border-[#2677C9] transition-colors ${
+            pendingApprovalsCount > 0 ? 'border-[#D9A441]/60 text-[#93691F]' : ''
           }`}
           title="Pending Approvals"
         >
           <Bell className="w-4 h-4" />
           {pendingApprovalsCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#D4A15D] text-[#F4EFE5] text-[10px] font-bold font-mono">
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#D9A441] text-[#F4F8FC] text-[10px] font-bold font-mono">
               {pendingApprovalsCount}
             </span>
           )}
@@ -111,10 +111,10 @@ export const TopNav: React.FC<TopNavProps> = ({
         {/* Run Tests Button */}
         <button
           onClick={onRunTests}
-          className="flex items-center space-x-1.5 px-3 py-1 bg-[#FAF6EE] hover:bg-[#EDE4D4] border border-[#D4C1A1] hover:border-[#718777] text-[#332B20] rounded text-xs font-mono transition-colors"
+          className="flex items-center space-x-1.5 px-3 py-1 bg-[#FFFFFF] hover:bg-[#EAF4FF] border border-[#E1EAF3] hover:border-[#25856B] text-[#17324D] rounded text-xs font-mono transition-colors"
           title="Run 12 Automated Verification Tests"
         >
-          <Play className="w-3.5 h-3.5 text-[#4F6555]" />
+          <Play className="w-3.5 h-3.5 text-[#1E6B58]" />
           <span>Run Tests</span>
         </button>
 
@@ -122,7 +122,7 @@ export const TopNav: React.FC<TopNavProps> = ({
         <button
           onClick={onResetSandbox}
           disabled={isResetting}
-          className="flex items-center space-x-1.5 px-3 py-1 bg-[#EDE4D4] hover:bg-[#E4D8C4] border border-[#B86B43]/60 hover:border-[#B86B43] text-[#985333] rounded text-xs font-mono transition-colors disabled:opacity-50"
+          className="flex items-center space-x-1.5 px-3 py-1 bg-[#EAF4FF] hover:bg-[#D9ECFF] border border-[#2677C9]/60 hover:border-[#2677C9] text-[#1E5E9B] rounded text-xs font-mono transition-colors disabled:opacity-50"
           title="Reset sandbox incidents, logs, and state to pristine baseline"
         >
           <RotateCcw className={`w-3.5 h-3.5 ${isResetting ? 'animate-spin' : ''}`} />

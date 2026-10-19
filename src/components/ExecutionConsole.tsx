@@ -22,26 +22,26 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
   const isExecuted = proposal?.status === 'executed';
 
   return (
-    <div className="border border-[#D4C1A1] rounded bg-[#FAF6EE] p-4 font-mono flex flex-col h-full">
+    <div className="border border-[#E1EAF3] rounded bg-[#FFFFFF] p-4 font-mono flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#D4C1A1] mb-4">
+      <div className="flex items-center justify-between pb-3 border-b border-[#E1EAF3] mb-4">
         <div className="flex items-center space-x-2">
-          <Terminal className="w-4 h-4 text-[#985333]" />
-          <h3 className="text-sm font-semibold text-[#332B20]">
+          <Terminal className="w-4 h-4 text-[#1E5E9B]" />
+          <h3 className="text-sm font-semibold text-[#17324D]">
             Sandbox Remediation Engine
           </h3>
         </div>
 
         {proposal && (
           <div className="flex items-center space-x-2 text-xs">
-            <span className="text-[#756B5D]">STATUS:</span>
+            <span className="text-[#718096]">STATUS:</span>
             <span
               className={`px-2 py-0.5 rounded border text-[11px] font-bold ${
                 isApproved
-                  ? 'bg-[#718777]/20 text-[#4F6555] border-[#718777]/50'
+                  ? 'bg-[#25856B]/20 text-[#1E6B58] border-[#25856B]/50'
                   : isExecuted
-                  ? 'bg-[#718777]/10 text-[#4F6555] border-[#718777]/30'
-                  : 'bg-[#D4A15D]/20 text-[#8A6030] border-[#D4A15D]/50'
+                  ? 'bg-[#25856B]/10 text-[#1E6B58] border-[#25856B]/30'
+                  : 'bg-[#D9A441]/20 text-[#93691F] border-[#D9A441]/50'
               }`}
             >
               {proposal.status.toUpperCase()}
@@ -52,35 +52,35 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
 
       {/* Execution Controls */}
       {proposal && (
-        <div className="p-3 bg-[#F4EFE5] rounded border border-[#D4C1A1] mb-4 space-y-3 text-xs">
+        <div className="p-3 bg-[#F4F8FC] rounded border border-[#E1EAF3] mb-4 space-y-3 text-xs">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[#756B5D]">Target Action: </span>
-              <span className="text-[#985333] font-bold">{proposal.action_type}</span>
+              <span className="text-[#718096]">Target Action: </span>
+              <span className="text-[#1E5E9B] font-bold">{proposal.action_type}</span>
             </div>
-            <div className="text-[#756B5D]">
-              Hash: <span className="text-[#332B20]">{proposal.plan_hash}</span>
+            <div className="text-[#718096]">
+              Hash: <span className="text-[#17324D]">{proposal.plan_hash}</span>
             </div>
           </div>
 
           {/* Simulation Mode Toggles */}
-          <div className="pt-2 border-t border-[#D4C1A1] flex flex-wrap items-center gap-4 text-xs">
-            <label className="flex items-center space-x-2 cursor-pointer text-[#655D51] hover:text-[#332B20]">
+          <div className="pt-2 border-t border-[#E1EAF3] flex flex-wrap items-center gap-4 text-xs">
+            <label className="flex items-center space-x-2 cursor-pointer text-[#4A6176] hover:text-[#17324D]">
               <input
                 type="checkbox"
                 checked={simulateFailure}
                 onChange={(e) => setSimulateFailure(e.target.checked)}
-                className="rounded border-[#D4C1A1] bg-[#FAF6EE] text-[#985333] focus:ring-0"
+                className="rounded border-[#E1EAF3] bg-[#FFFFFF] text-[#1E5E9B] focus:ring-0"
               />
               <span>Simulate Sandbox Subsystem Precondition Lock Failure</span>
             </label>
 
-            <label className="flex items-center space-x-2 cursor-pointer text-[#655D51] hover:text-[#332B20]">
+            <label className="flex items-center space-x-2 cursor-pointer text-[#4A6176] hover:text-[#17324D]">
               <input
                 type="checkbox"
                 checked={simulateVerificationFailure}
                 onChange={(e) => setSimulateVerificationFailure(e.target.checked)}
-                className="rounded border-[#D4C1A1] bg-[#FAF6EE] text-[#985333] focus:ring-0"
+                className="rounded border-[#E1EAF3] bg-[#FFFFFF] text-[#1E5E9B] focus:ring-0"
               />
               <span>Simulate Post-Remediation Verification Failure (Honest reporting)</span>
             </label>
@@ -88,7 +88,7 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
 
           {/* Action Trigger Button */}
           <div className="pt-2 flex items-center justify-between">
-            <div className="text-[11px] text-[#756B5D]">
+            <div className="text-[11px] text-[#718096]">
               {!isApproved && !isExecuted
                 ? 'Execution locked until Human SRE approval is signed in Approval Center'
                 : isExecuted
@@ -106,8 +106,8 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
               disabled={!isApproved || isExecuting}
               className={`px-4 py-2 rounded font-bold text-xs flex items-center space-x-1.5 transition-all ${
                 isApproved && !isExecuting
-                  ? 'bg-[#B86B43] hover:bg-[#985333] text-[#332B20] cursor-pointer'
-                  : 'bg-[#EDE4D4] text-[#756B5D] border border-[#D4C1A1] cursor-not-allowed opacity-60'
+                  ? 'bg-[#2677C9] hover:bg-[#1E5E9B] text-white cursor-pointer'
+                  : 'bg-[#EAF4FF] text-[#718096] border border-[#E1EAF3] cursor-not-allowed opacity-60'
               }`}
             >
               <Play className={`w-3.5 h-3.5 ${isExecuting ? 'animate-spin' : ''}`} />
@@ -120,15 +120,15 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
       )}
 
       {/* Terminal Output */}
-      <div className="flex-1 bg-[#F4EFE5] rounded border border-[#D4C1A1] p-3 text-xs overflow-y-auto font-mono flex flex-col justify-between min-h-[220px]">
+      <div className="flex-1 bg-[#F4F8FC] rounded border border-[#E1EAF3] p-3 text-xs overflow-y-auto font-mono flex flex-col justify-between min-h-[220px]">
         <div className="space-y-1.5">
-          <div className="text-[#756B5D] pb-1 border-b border-[#D4C1A1] flex items-center justify-between">
+          <div className="text-[#718096] pb-1 border-b border-[#E1EAF3] flex items-center justify-between">
             <span>[SANDBOX EXECUTION LOG BUFFER]</span>
-            <span className="text-[10px] text-[#4F6555]">READY</span>
+            <span className="text-[10px] text-[#1E6B58]">READY</span>
           </div>
 
           {!action?.execution_logs || action.execution_logs.length === 0 ? (
-            <div className="text-[#756B5D] italic pt-4">
+            <div className="text-[#718096] italic pt-4">
               Awaiting execution trigger. Preconditions will be revalidated against immutable plan hash upon launch.
             </div>
           ) : (
@@ -142,15 +142,15 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
                   key={idx}
                   className={`${
                     isError
-                      ? 'text-[#A73832]'
+                      ? 'text-[#B33E3E]'
                       : isWarn
-                      ? 'text-[#8A6030]'
+                      ? 'text-[#93691F]'
                       : isExec
-                      ? 'text-[#4F6555]'
-                      : 'text-[#332B20]'
+                      ? 'text-[#1E6B58]'
+                      : 'text-[#17324D]'
                   }`}
                 >
-                  <span className="text-[#756B5D] mr-2">[{idx + 1}]</span>
+                  <span className="text-[#718096] mr-2">[{idx + 1}]</span>
                   {logLine}
                 </div>
               );
@@ -160,10 +160,10 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
 
         {/* Before / After State Snapshot if executed */}
         {action && (
-          <div className="mt-4 pt-3 border-t border-[#D4C1A1] grid grid-cols-2 gap-3 text-[11px]">
-            <div className="p-2 rounded bg-[#FAF6EE] border border-[#D4C1A1]">
-              <div className="text-[#756B5D] uppercase font-bold mb-1">Before State (Baseline):</div>
-              <div className="text-[#A73832]">
+          <div className="mt-4 pt-3 border-t border-[#E1EAF3] grid grid-cols-2 gap-3 text-[11px]">
+            <div className="p-2 rounded bg-[#FFFFFF] border border-[#E1EAF3]">
+              <div className="text-[#718096] uppercase font-bold mb-1">Before State (Baseline):</div>
+              <div className="text-[#B33E3E]">
                 {action.before_state.connection_utilization_pct !== undefined && (
                   <div>Pool Saturation: {action.before_state.connection_utilization_pct}%</div>
                 )}
@@ -175,9 +175,9 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
               </div>
             </div>
 
-            <div className="p-2 rounded bg-[#FAF6EE] border border-[#D4C1A1]">
-              <div className="text-[#756B5D] uppercase font-bold mb-1">After State (Remediated):</div>
-              <div className="text-[#4F6555]">
+            <div className="p-2 rounded bg-[#FFFFFF] border border-[#E1EAF3]">
+              <div className="text-[#718096] uppercase font-bold mb-1">After State (Remediated):</div>
+              <div className="text-[#1E6B58]">
                 {action.after_state.connection_utilization_pct !== undefined && (
                   <div>Pool Saturation: {action.after_state.connection_utilization_pct}%</div>
                 )}
