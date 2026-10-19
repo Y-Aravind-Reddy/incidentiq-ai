@@ -1,0 +1,6 @@
+{
+  "name": "IncidentIQ AI",
+  "description": "Enterprise AI Incident Resolution Agent — Detect, Investigate, Approve, Remediate, and Verify incidents with evidence-backed reasoning and human-in-the-loop control.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

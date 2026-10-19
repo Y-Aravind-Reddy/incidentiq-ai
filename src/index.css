@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --color-champagne: #F4EFE5;
+    --color-sand: #EDE4D4;
+    --color-ivory: #FAF6EE;
+    --color-sand-border: #D4C1A1;
+    --color-copper: #B86B43;
+    --color-amber: #D4A15D;
+    --color-sage: #718777;
+    --color-ink: #332B20;
+    --color-muted: #655D51;
+    --color-critical: #C74F46;
+    --bg-graphite: #F4EFE5;
+    --bg-charcoal: #FAF6EE;
+    --bg-elevated: #EDE4D4;
+    --bg-raised: #E4D8C4;
+    --border-graphite: #D4C1A1;
+    --border-subtle: #D4C1A1;
+    --accent-orange: #B86B43;
+    --accent-copper: #985333;
+    --accent-amber: #D4A15D;
+    --accent-soft-amber: #8A6030;
+    --accent-teal: #718777;
+    --accent-deep-teal: #4F6555;
+    --text-primary: #332B20;
+    --text-secondary: #655D51;
+    --text-muted: #756B5D;
+    --sev-critical: #C74F46;
+    --sev-high: #B86B43;
+    --sev-med: #D4A15D;
+    --sev-low: #718777;
+  }
+
+  body {
+    background-color: #F4EFE5;
+    color: #332B20;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+/* Soft champagne and copper linework adds depth without competing with content. */
+.dashboard-hero {
+  background:
+    radial-gradient(ellipse at 88% 20%, rgb(212 161 93 / 18%), transparent 34%),
+    linear-gradient(112deg, #FAF6EE 0%, #F2E8D6 54%, #EDE0CB 100%);
+}
+
+.dashboard-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.48;
+  background: repeating-radial-gradient(ellipse at 100% 108%, transparent 0 20px, rgb(184 107 67 / 18%) 21px 22px, transparent 23px 38px);
+  mask-image: linear-gradient(100deg, transparent 30%, #000 100%);
+}
+
+.hero-orbit {
+  box-shadow: 0 0 0 18px rgb(212 161 93 / 5%), 0 0 0 38px rgb(184 107 67 / 4%);
+}
+
+.hero-orbit-secondary { transform: rotate(-28deg) scaleX(1.2); }
+
+.sidebar-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 4.5rem 0 0;
+  pointer-events: none;
+  opacity: 0.24;
+  background-image:
+    radial-gradient(circle at 18px 20px, #B86B43 1.2px, transparent 1.8px),
+    radial-gradient(circle at 58px 48px, #D4A15D 1px, transparent 1.8px),
+    linear-gradient(28deg, transparent 49.5%, #D4C1A1 50%, transparent 50.5%),
+    linear-gradient(148deg, transparent 49.5%, #D4C1A1 50%, transparent 50.5%);
+  background-size: 78px 72px;
+  mask-image: linear-gradient(to bottom, #000, transparent 86%);
+}
+
+.sidebar-pattern > * { position: relative; z-index: 1; }
+
+.evidence-pattern {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgb(184 107 67 / 18%) 1px, transparent 1.5px),
+    linear-gradient(135deg, transparent 49.7%, rgb(212 161 93 / 11%) 50%, transparent 50.3%);
+  background-size: 38px 38px, 76px 76px;
+  background-position: 0 0, 8px 4px;
+}
+
+button { border-radius: 0.5rem; }
+
+button, a, input, select, textarea { transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+
+:focus-visible {
+  outline: 3px solid #985333;
+  outline-offset: 2px;
+}
+
+button:disabled { cursor: not-allowed; }
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F4EFE5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4C1A1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B86B43;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
