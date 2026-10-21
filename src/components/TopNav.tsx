@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Server,
   Zap,
+  LogOut,
 } from 'lucide-react';
 import { Incident } from '../agent/types.ts';
 
@@ -20,6 +21,7 @@ interface TopNavProps {
   onResetSandbox: () => void;
   onRunTests: () => void;
   isResetting: boolean;
+  onSignOut: () => void;
 }
 
 export const TopNav: React.FC<TopNavProps> = ({
@@ -32,6 +34,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   onResetSandbox,
   onRunTests,
   isResetting,
+  onSignOut,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -106,6 +109,15 @@ export const TopNav: React.FC<TopNavProps> = ({
               {pendingApprovalsCount}
             </span>
           )}
+        </button>
+
+        <button
+          onClick={onSignOut}
+          className="flex items-center space-x-1.5 px-3 py-1 bg-[#FFFFFF] hover:bg-[#EAF4FF] border border-[#E1EAF3] hover:border-[#2677C9] text-[#4A6176] rounded text-xs font-mono transition-colors"
+          title="Sign out of IncidentIQ AI"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          <span>Sign out</span>
         </button>
 
         {/* Run Tests Button */}

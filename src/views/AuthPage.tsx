@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Activity, CheckCircle2, Eye, EyeOff, Fingerprint, LockKeyhole, Mail, ShieldCheck } from 'lucide-react';
 import { supabaseBrowser, supabaseBrowserConfigError } from '../config/supabaseBrowser.ts';
+import { safeControlRoomReturnPath } from '../config/navigation.ts';
 
 type AuthMode = 'login' | 'signup';
 
@@ -24,6 +25,7 @@ function safeAuthError(message: string, mode: AuthMode): string {
 
 export const AuthPage: React.FC<AuthPageProps> = ({ mode }) => {
   const query = new URLSearchParams(window.location.search);
+  const postAuthPath = safeControlRoomReturnPath(query.get('returnTo'));
   const [isRecoveryRequest, setIsRecoveryRequest] = useState(false);
   const [isRecoveryUpdate, setIsRecoveryUpdate] = useState(mode === 'login' && query.get('flow') === 'recovery');
   const [fullName, setFullName] = useState('');
@@ -39,10 +41,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode }) => {
     if (mode !== 'login' || query.get('flow') === 'recovery' || !supabaseBrowser) return;
     let active = true;
     supabaseBrowser.auth.getSession().then(({ data }) => {
-      if (active && data.session) window.location.replace('/dashboard');
+      if (active && data.session) window.location.replace(postAuthPath);
     });
     return () => { active = false; };
-  }, [mode]);
+  }, [mode, postAuthPath]);
 
   const clearFeedback = () => {
     setError('');
@@ -99,7 +101,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode }) => {
         setNotice('Your password was updated. You can continue to the control room.');
         setPassword('');
         setConfirmPassword('');
-        window.setTimeout(() => window.location.assign('/dashboard'), 900);
+        window.setTimeout(() => window.location.assign(postAuthPath), 900);
         return;
       }
 
@@ -110,7 +112,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode }) => {
         });
         if (signInError) throw signInError;
         if (!data.session) throw new Error('No active session was returned.');
-        window.location.assign('/dashboard');
+        window.location.assign(postAuthPath);
         return;
       }
 
@@ -124,7 +126,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode }) => {
       });
       if (signUpError) throw signUpError;
       if (data.session) {
-        window.location.assign('/dashboard');
+        window.location.assign(postAuthPath);
         return;
       }
       setNotice('Your account request was received. Check your email for a verification link before signing in.');

@@ -1,13 +1,14 @@
-import { Router, type Request, type Response } from 'express';
+import { Router, type Request, type Response, type NextFunction } from 'express';
 import { z } from 'zod';
 import { stateStore } from '../agent/state.ts';
 import { persistence } from '../agent/persistence.ts';
 import { orchestrator } from '../agent/orchestrator.ts';
 import { env } from '../config/env.ts';
-import { isSupabaseConfigured, isSupabaseDatabaseReady, getSupabaseDiagnostics } from '../config/supabase.ts';
+import { isSupabaseConfigured, isSupabaseDatabaseReady, getSupabaseDiagnostics, supabase } from '../config/supabase.ts';
 import { runAutomatedTests } from '../tests/agent.test.ts';
 
 export const apiRouter = Router();
+const protectedApiRouter = Router();
 
 // GET /api/health
 apiRouter.get('/health', (_req: Request, res: Response) => {
@@ -25,14 +26,31 @@ apiRouter.get('/health', (_req: Request, res: Response) => {
   });
 });
 
+// Health stays public for deployment checks. All application data and workflow routes
+// require a Supabase access token that is verified by the server-side Auth client.
+protectedApiRouter.use(['/incidents', '/runbooks', '/investigations', '/proposals', '/audit', '/sandbox', '/tests'], async (req: Request, res: Response, next: NextFunction) => {
+  const authorization = req.get('authorization') || '';
+  const token = authorization.match(/^Bearer\s+([^\s]+)$/i)?.[1];
+  if (!token) return res.status(401).json({ error: 'Sign in is required.' });
+  if (!supabase) return res.status(503).json({ error: 'Authentication service is unavailable.' });
+
+  try {
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user) return res.status(401).json({ error: 'Your session is invalid or expired. Sign in again.' });
+    return next();
+  } catch {
+    return res.status(503).json({ error: 'Authentication could not be verified. Try again.' });
+  }
+});
+
 // GET /api/incidents
-apiRouter.get('/incidents', async (_req: Request, res: Response) => {
+protectedApiRouter.get('/incidents', async (_req: Request, res: Response) => {
   try { res.json({ incidents: await persistence.getAllIncidents() }); }
   catch (error: any) { res.status(503).json({ error: error.message || 'Incident storage unavailable' }); }
 });
 
 // GET /api/incidents/:id
-apiRouter.get('/incidents/:id', async (req: Request, res: Response) => {
+protectedApiRouter.get('/incidents/:id', async (req: Request, res: Response) => {
   try {
   const incident = await persistence.getIncident(req.params.id);
   if (!incident) {
@@ -66,7 +84,7 @@ const CreateIncidentSchema = z.object({
   metrics: z.record(z.string(), z.any()).default({ health_check_status: 'DEGRADED' }),
 });
 
-apiRouter.post('/incidents', async (req: Request, res: Response) => {
+protectedApiRouter.post('/incidents', async (req: Request, res: Response) => {
   const parsed = CreateIncidentSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Validation failed', details: parsed.error.format() });
@@ -98,19 +116,19 @@ apiRouter.post('/incidents', async (req: Request, res: Response) => {
 });
 
 // GET /api/incidents/:id/logs
-apiRouter.get('/incidents/:id/logs', async (req: Request, res: Response) => {
+protectedApiRouter.get('/incidents/:id/logs', async (req: Request, res: Response) => {
   try { res.json({ logs: await persistence.getLogsForIncident(req.params.id) }); }
   catch (error: any) { res.status(503).json({ error: error.message || 'Incident log storage unavailable' }); }
 });
 
 // GET /api/runbooks
-apiRouter.get('/runbooks', async (_req: Request, res: Response) => {
+protectedApiRouter.get('/runbooks', async (_req: Request, res: Response) => {
   try { res.json({ runbooks: await persistence.getAllRunbooks() }); }
   catch (error: any) { res.status(503).json({ error: error.message || 'Runbook storage unavailable' }); }
 });
 
 // POST /api/incidents/:id/investigations
-apiRouter.post('/incidents/:id/investigations', async (req: Request, res: Response) => {
+protectedApiRouter.post('/incidents/:id/investigations', async (req: Request, res: Response) => {
   try {
     const result = await orchestrator.runInvestigation(req.params.id);
     res.json(result);
@@ -121,7 +139,7 @@ apiRouter.post('/incidents/:id/investigations', async (req: Request, res: Respon
 });
 
 // GET /api/investigations/:id
-apiRouter.get('/investigations/:id', async (req: Request, res: Response) => {
+protectedApiRouter.get('/investigations/:id', async (req: Request, res: Response) => {
   try {
   const investigation = await persistence.getInvestigation(req.params.id);
   if (!investigation) {
@@ -132,7 +150,7 @@ apiRouter.get('/investigations/:id', async (req: Request, res: Response) => {
 });
 
 // GET /api/incidents/:id/proposals
-apiRouter.get('/incidents/:id/proposals', async (req: Request, res: Response) => {
+protectedApiRouter.get('/incidents/:id/proposals', async (req: Request, res: Response) => {
   try { res.json({ proposals: await persistence.getProposalsForIncident(req.params.id) }); }
   catch (error: any) { res.status(503).json({ error: error.message || 'Proposal storage unavailable' }); }
 });
@@ -145,7 +163,7 @@ const ApprovalSchema = z.object({
   comments: z.string().optional(),
 });
 
-apiRouter.post('/proposals/:id/approve', async (req: Request, res: Response) => {
+protectedApiRouter.post('/proposals/:id/approve', async (req: Request, res: Response) => {
   const parsed = ApprovalSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Validation failed', details: parsed.error.format() });
@@ -167,7 +185,7 @@ apiRouter.post('/proposals/:id/approve', async (req: Request, res: Response) => 
 });
 
 // POST /api/proposals/:id/reject
-apiRouter.post('/proposals/:id/reject', async (req: Request, res: Response) => {
+protectedApiRouter.post('/proposals/:id/reject', async (req: Request, res: Response) => {
   const parsed = ApprovalSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Validation failed', details: parsed.error.format() });
@@ -195,7 +213,7 @@ const ExecuteSchema = z.object({
   forceVerificationFail: z.boolean().optional(),
 });
 
-apiRouter.post('/proposals/:id/execute', async (req: Request, res: Response) => {
+protectedApiRouter.post('/proposals/:id/execute', async (req: Request, res: Response) => {
   const parsed = ExecuteSchema.safeParse(req.body || {});
   try {
     const result = await orchestrator.executeRemediation(
@@ -213,7 +231,7 @@ apiRouter.post('/proposals/:id/execute', async (req: Request, res: Response) => 
 });
 
 // GET /api/incidents/:id/verification
-apiRouter.get('/incidents/:id/verification', async (req: Request, res: Response) => {
+protectedApiRouter.get('/incidents/:id/verification', async (req: Request, res: Response) => {
   try {
   const verification = await persistence.getVerificationForIncident(req.params.id);
   if (!verification) {
@@ -224,19 +242,19 @@ apiRouter.get('/incidents/:id/verification', async (req: Request, res: Response)
 });
 
 // GET /api/incidents/:id/audit
-apiRouter.get('/incidents/:id/audit', async (req: Request, res: Response) => {
+protectedApiRouter.get('/incidents/:id/audit', async (req: Request, res: Response) => {
   try { res.json({ audit: await persistence.getAuditEventsForIncident(req.params.id) }); }
   catch (error: any) { res.status(503).json({ error: error.message || 'Audit storage unavailable' }); }
 });
 
 // GET /api/audit (all audit events across all incidents)
-apiRouter.get('/audit', async (_req: Request, res: Response) => {
+protectedApiRouter.get('/audit', async (_req: Request, res: Response) => {
   try { res.json({ audit: await persistence.getAllAuditEvents() }); }
   catch (error: any) { res.status(503).json({ error: error.message || 'Audit storage unavailable' }); }
 });
 
 // POST /api/sandbox/reset
-apiRouter.post('/sandbox/reset', (_req: Request, res: Response) => {
+protectedApiRouter.post('/sandbox/reset', (_req: Request, res: Response) => {
   if (isSupabaseConfigured()) {
     return res.status(409).json({ error: 'Sandbox reset is disabled for Supabase persistence to prevent deleting database records. Use a separately verified demo database and seed script to prepare demo data.' });
   }
@@ -249,7 +267,7 @@ apiRouter.post('/sandbox/reset', (_req: Request, res: Response) => {
 });
 
 // POST /api/tests/run
-apiRouter.post('/tests/run', async (_req: Request, res: Response) => {
+protectedApiRouter.post('/tests/run', async (_req: Request, res: Response) => {
   try {
     const testReport = await runAutomatedTests();
     res.json(testReport);
@@ -257,3 +275,6 @@ apiRouter.post('/tests/run', async (_req: Request, res: Response) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+apiRouter.use(protectedApiRouter);

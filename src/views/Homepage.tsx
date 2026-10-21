@@ -19,7 +19,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-const controlRoomHref = '/#control-room';
+const controlRoomHref = '/dashboard';
 
 const stages = [
   { number: '01', title: 'Incident Intake', detail: 'Start from a reported or observed service issue.', icon: AudioLines },
@@ -59,9 +59,13 @@ export const Homepage: React.FC = () => (
           <a className="home-nav-link" href="#demo-incidents">Demo incidents</a>
         </nav>
 
-        <a className="home-header-cta" href={controlRoomHref}>
-          Launch Control Room <ArrowRight aria-hidden="true" className="h-4 w-4" />
-        </a>
+        <div className="home-header-actions">
+          <a className="home-login-link" href="/login">Login</a>
+          <a className="home-signup-link" href="/signup">Sign Up</a>
+          <a className="home-header-cta" href={controlRoomHref}>
+            Launch Control Room <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </a>
+        </div>
       </div>
     </header>
 

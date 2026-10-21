@@ -12,6 +12,20 @@ import type { AutomatedTestReport } from '../tests/agent.test.ts';
 
 const API_BASE = '/api';
 
+async function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const headers = new Headers(init.headers);
+  try {
+    const { supabaseBrowser } = await import('../config/supabaseBrowser.ts');
+    if (supabaseBrowser) {
+      const { data } = await supabaseBrowser.auth.getSession();
+      if (data.session?.access_token) headers.set('Authorization', `Bearer ${data.session.access_token}`);
+    }
+  } catch {
+    // Keep the request unauthenticated; the API rejects protected calls safely.
+  }
+  return fetch(input, { ...init, headers });
+}
+
 type ApiRecord = Record<string, unknown>;
 
 function isRecord(value: unknown): value is ApiRecord {
@@ -67,7 +81,7 @@ export async function fetchHealth(): Promise<{
   storage_mode: 'supabase' | 'in-memory-demo';
   supabase_diagnostics?: { diagnostic?: string; database_ready?: boolean };
 }> {
-  const data = await readResponse(await fetch(`${API_BASE}/health`), 'Health check');
+  const data = await readResponse(await apiFetch(`${API_BASE}/health`), 'Health check');
   if (!hasStringFields(data, ['status', 'service', 'environment', 'model']) ||
       typeof data.supabase_connected !== 'boolean' || typeof data.has_gemini_key !== 'boolean' ||
       (data.storage_mode !== 'supabase' && data.storage_mode !== 'in-memory-demo')) {
@@ -82,7 +96,7 @@ export async function fetchHealth(): Promise<{
 }
 
 export async function fetchIncidents(): Promise<Incident[]> {
-  const data = await readResponse(await fetch(`${API_BASE}/incidents`), 'Incident list');
+  const data = await readResponse(await apiFetch(`${API_BASE}/incidents`), 'Incident list');
   return requireArray<Incident>(data, 'incidents', 'Incident list', isIncident);
 }
 
@@ -94,7 +108,7 @@ export async function fetchIncidentDetails(id: string): Promise<{
   verification?: VerificationResult;
   audit: AuditEvent[];
 }> {
-  const data = await readResponse(await fetch(`${API_BASE}/incidents/${encodeURIComponent(id)}`), 'Incident details');
+  const data = await readResponse(await apiFetch(`${API_BASE}/incidents/${encodeURIComponent(id)}`), 'Incident details');
   if (!isIncident(data.incident)) throw new Error('Incident details returned invalid incident data.');
   const logs = requireArray<IncidentLog>(data, 'logs', 'Incident details', (item) => isRecord(item) && hasStringFields(item, ['id', 'incident_id', 'timestamp', 'severity', 'service_name', 'message']));
   const investigations = requireArray<InvestigationRun>(data, 'investigations', 'Incident details', isInvestigation);
@@ -119,7 +133,7 @@ export async function createIncident(data: {
   severity: string;
   service_name: string;
 }): Promise<Incident> {
-  const responseData = await readResponse(await fetch(`${API_BASE}/incidents`, {
+  const responseData = await readResponse(await apiFetch(`${API_BASE}/incidents`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -129,7 +143,7 @@ export async function createIncident(data: {
 }
 
 export async function fetchRunbooks(): Promise<Runbook[]> {
-  const data = await readResponse(await fetch(`${API_BASE}/runbooks`), 'Runbook list');
+  const data = await readResponse(await apiFetch(`${API_BASE}/runbooks`), 'Runbook list');
   return requireArray<Runbook>(data, 'runbooks', 'Runbook list', isRunbook);
 }
 
@@ -137,7 +151,7 @@ export async function runInvestigation(incidentId: string): Promise<{
   investigation: InvestigationRun;
   proposal: RemediationProposal;
 }> {
-  const data = await readResponse(await fetch(`${API_BASE}/incidents/${encodeURIComponent(incidentId)}/investigations`, {
+  const data = await readResponse(await apiFetch(`${API_BASE}/incidents/${encodeURIComponent(incidentId)}/investigations`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   }), 'Incident investigation');
@@ -152,7 +166,7 @@ export async function approveProposal(
   confirmedPlanHash: string,
   comments?: string
 ): Promise<{ approval: RemediationApproval; proposal: RemediationProposal }> {
-  const data = await readResponse(await fetch(`${API_BASE}/proposals/${encodeURIComponent(proposalId)}/approve`, {
+  const data = await readResponse(await apiFetch(`${API_BASE}/proposals/${encodeURIComponent(proposalId)}/approve`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -174,7 +188,7 @@ export async function rejectProposal(
   confirmedPlanHash: string,
   comments?: string
 ): Promise<{ approval: RemediationApproval; proposal: RemediationProposal }> {
-  const data = await readResponse(await fetch(`${API_BASE}/proposals/${encodeURIComponent(proposalId)}/reject`, {
+  const data = await readResponse(await apiFetch(`${API_BASE}/proposals/${encodeURIComponent(proposalId)}/reject`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -195,7 +209,7 @@ export async function executeProposal(
   proposalId: string,
   options?: { forceFailure?: boolean; forceVerificationFail?: boolean }
 ): Promise<{ action: any; verification: VerificationResult }> {
-  const data = await readResponse(await fetch(`${API_BASE}/proposals/${encodeURIComponent(proposalId)}/execute`, {
+  const data = await readResponse(await apiFetch(`${API_BASE}/proposals/${encodeURIComponent(proposalId)}/execute`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -212,12 +226,12 @@ export async function executeProposal(
 }
 
 export async function fetchAllAudit(): Promise<AuditEvent[]> {
-  const data = await readResponse(await fetch(`${API_BASE}/audit`), 'Audit history');
+  const data = await readResponse(await apiFetch(`${API_BASE}/audit`), 'Audit history');
   return requireArray<AuditEvent>(data, 'audit', 'Audit history', isAuditEvent);
 }
 
 export async function resetSandbox(): Promise<{ message: string; incidents: Incident[] }> {
-  const data = await readResponse(await fetch(`${API_BASE}/sandbox/reset`, {
+  const data = await readResponse(await apiFetch(`${API_BASE}/sandbox/reset`, {
     method: 'POST',
   }), 'Sandbox reset');
   if (typeof data.message !== 'string') throw new Error('Sandbox reset returned invalid response data.');
@@ -225,7 +239,7 @@ export async function resetSandbox(): Promise<{ message: string; incidents: Inci
 }
 
 export async function triggerAutomatedTests(): Promise<AutomatedTestReport> {
-  const data = await readResponse(await fetch(`${API_BASE}/tests/run`, {
+  const data = await readResponse(await apiFetch(`${API_BASE}/tests/run`, {
     method: 'POST',
   }), 'Automated test suite');
   if (typeof data.suite_status !== 'string' || !Array.isArray(data.results)) {

@@ -15,6 +15,9 @@ async function startServer() {
 
   // API Routes
   app.use('/api', apiRouter);
+  app.use('/api', (_req, res) => {
+    res.status(404).json({ error: 'API route not found' });
+  });
 
   const isProduction = process.env.NODE_ENV === 'production';
 

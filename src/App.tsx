@@ -35,10 +35,12 @@ import { ApprovalModal } from './components/ApprovalModal.tsx';
 import { TestRunnerModal } from './components/TestRunnerModal.tsx';
 import { NewIncidentModal } from './components/NewIncidentModal.tsx';
 import { Homepage } from './views/Homepage.tsx';
+import { getPublicAuthRoute, isControlRoomRoute, safeControlRoomReturnPath } from './config/navigation.ts';
 
 const AuthPage = lazy(() => import('./views/AuthPage.tsx').then((module) => ({ default: module.AuthPage })));
+const ProtectedControlRoom = lazy(() => import('./views/ProtectedControlRoom.tsx').then((module) => ({ default: module.ProtectedControlRoom })));
 
-function ControlRoomApp() {
+function ControlRoomApp({ onSignOut }: { onSignOut: () => Promise<void> }) {
   const [currentTab, setCurrentTab] = useState<NavTab>('overview');
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string>('INC-2026-8841');
@@ -257,6 +259,14 @@ function ControlRoomApp() {
           onResetSandbox={handleResetSandbox}
           onRunTests={() => setIsTestRunnerOpen(true)}
           isResetting={isResetting}
+          onSignOut={() => {
+            void onSignOut().catch((error: unknown) => {
+              setBannerNotice({
+                type: 'error',
+                message: error instanceof Error ? error.message : 'Sign out could not be completed.',
+              });
+            });
+          }}
         />
 
         {/* Global Alert Notification Banner */}
@@ -427,16 +437,23 @@ function ControlRoomApp() {
 
 export default function App() {
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
-  if (pathname === '/login' || pathname === '/signup') {
+  const authRoute = getPublicAuthRoute(pathname);
+  if (authRoute) {
     return (
       <Suspense fallback={<main className="grid min-h-screen place-items-center bg-[#F4F8FC] text-sm text-[#4A6176]">Loading secure sign-in…</main>}>
-        <AuthPage mode={pathname === '/signup' ? 'signup' : 'login'} />
+        <AuthPage mode={authRoute} />
       </Suspense>
     );
   }
 
-  const isControlRoomRoute = pathname === '/dashboard'
-    || window.location.hash === '#control-room';
+  const isProtectedRoute = isControlRoomRoute(pathname, window.location.hash);
+  const returnPath = safeControlRoomReturnPath(pathname === '/' ? '/#control-room' : '/dashboard');
 
-  return isControlRoomRoute ? <ControlRoomApp /> : <Homepage />;
+  return isProtectedRoute ? (
+    <Suspense fallback={<main className="grid min-h-screen place-items-center bg-[#07111F] text-sm text-[#AAB6C8]" role="status">Loading secure control room…</main>}>
+      <ProtectedControlRoom returnPath={returnPath}>
+        {(onSignOut) => <ControlRoomApp onSignOut={onSignOut} />}
+      </ProtectedControlRoom>
+    </Suspense>
+  ) : <Homepage />;
 }
