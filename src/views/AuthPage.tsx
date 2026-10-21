@@ -146,7 +146,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode }) => {
         : 'Welcome back';
 
   return (
-    <main className="auth-page min-h-screen bg-[#F4F8FC] text-[#17324D]">
+    <main className="auth-page min-h-screen">
       <div className="auth-page-glow" aria-hidden="true" />
       <header className="auth-header">
         <a href="/" className="auth-brand" aria-label="IncidentIQ AI homepage">
