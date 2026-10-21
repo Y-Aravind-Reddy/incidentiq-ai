@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useCallback } from 'react';
 import {
   Incident,
   IncidentLog,
@@ -34,8 +34,11 @@ import { SettingsView } from './views/SettingsView.tsx';
 import { ApprovalModal } from './components/ApprovalModal.tsx';
 import { TestRunnerModal } from './components/TestRunnerModal.tsx';
 import { NewIncidentModal } from './components/NewIncidentModal.tsx';
+import { Homepage } from './views/Homepage.tsx';
 
-export default function App() {
+const AuthPage = lazy(() => import('./views/AuthPage.tsx').then((module) => ({ default: module.AuthPage })));
+
+function ControlRoomApp() {
   const [currentTab, setCurrentTab] = useState<NavTab>('overview');
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string>('INC-2026-8841');
@@ -420,4 +423,20 @@ export default function App() {
       />
     </div>
   );
+}
+
+export default function App() {
+  const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (pathname === '/login' || pathname === '/signup') {
+    return (
+      <Suspense fallback={<main className="grid min-h-screen place-items-center bg-[#F4F8FC] text-sm text-[#4A6176]">Loading secure sign-in…</main>}>
+        <AuthPage mode={pathname === '/signup' ? 'signup' : 'login'} />
+      </Suspense>
+    );
+  }
+
+  const isControlRoomRoute = pathname === '/dashboard'
+    || window.location.hash === '#control-room';
+
+  return isControlRoomRoute ? <ControlRoomApp /> : <Homepage />;
 }
