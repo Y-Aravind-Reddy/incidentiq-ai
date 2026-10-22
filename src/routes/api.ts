@@ -6,6 +6,14 @@ import { orchestrator } from '../agent/orchestrator.ts';
 import { env } from '../config/env.ts';
 import { isSupabaseConfigured, isSupabaseDatabaseReady, getSupabaseDiagnostics, supabase } from '../config/supabase.ts';
 import { runAutomatedTests } from '../tests/agent.test.ts';
+import {
+  ApprovalPayloadSchema,
+  canAssignAppRole,
+  canManageAccounts,
+  getAppRole,
+  getAuthenticatedApprovalActor,
+  type AuthIdentity,
+} from '../auth/authorization.ts';
 
 export const apiRouter = Router();
 const protectedApiRouter = Router();
@@ -28,7 +36,7 @@ apiRouter.get('/health', (_req: Request, res: Response) => {
 
 // Health stays public for deployment checks. All application data and workflow routes
 // require a Supabase access token that is verified by the server-side Auth client.
-protectedApiRouter.use(['/incidents', '/runbooks', '/investigations', '/proposals', '/audit', '/sandbox', '/tests'], async (req: Request, res: Response, next: NextFunction) => {
+protectedApiRouter.use(['/incidents', '/runbooks', '/investigations', '/proposals', '/audit', '/sandbox', '/tests', '/admin', '/me'], async (req: Request, res: Response, next: NextFunction) => {
   const authorization = req.get('authorization') || '';
   const token = authorization.match(/^Bearer\s+([^\s]+)$/i)?.[1];
   if (!token) return res.status(401).json({ error: 'Sign in is required.' });
@@ -37,9 +45,79 @@ protectedApiRouter.use(['/incidents', '/runbooks', '/investigations', '/proposal
   try {
     const { data, error } = await supabase.auth.getUser(token);
     if (error || !data.user) return res.status(401).json({ error: 'Your session is invalid or expired. Sign in again.' });
+    res.locals.authUser = data.user;
     return next();
   } catch {
     return res.status(503).json({ error: 'Authentication could not be verified. Try again.' });
+  }
+});
+
+export const adminRoleGuard = (_req: Request, res: Response, next: NextFunction) => {
+  const identity = res.locals.authUser as AuthIdentity | undefined;
+  if (!identity || !canManageAccounts(identity)) {
+    return res.status(403).json({ error: 'Administrator access is required.' });
+  }
+  return next();
+};
+protectedApiRouter.use('/admin', adminRoleGuard);
+
+// GET /api/me: expose only the caller's effective server-verified role.
+protectedApiRouter.get('/me', (req: Request, res: Response) => {
+  const identity = res.locals.authUser as AuthIdentity;
+  res.json({ id: identity.id, email: identity.email || null, role: getAppRole(identity) });
+});
+
+// Admin account listing and role changes use Supabase Auth's trusted app_metadata.
+protectedApiRouter.get('/admin/users', async (req: Request, res: Response) => {
+  if (!supabase) return res.status(503).json({ error: 'Authentication service is unavailable.' });
+  const page = Number(req.query.page ?? 1);
+  const perPage = Number(req.query.perPage ?? 50);
+  if (!Number.isInteger(page) || page < 1 || page > 10000 || !Number.isInteger(perPage) || perPage < 1 || perPage > 100) {
+    return res.status(400).json({ error: 'Pagination values are invalid.' });
+  }
+  try {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
+    if (error) return res.status(503).json({ error: 'User directory is unavailable.' });
+    const users = data.users.map((user) => ({
+      id: user.id,
+      email: user.email || null,
+      email_verified: Boolean(user.email_confirmed_at),
+      role: getAppRole(user),
+    }));
+    return res.json({ users, page, perPage });
+  } catch {
+    return res.status(503).json({ error: 'User directory is unavailable.' });
+  }
+});
+
+const RoleUpdateSchema = z.object({ role: z.enum(['admin', 'user']) }).strict();
+protectedApiRouter.patch('/admin/users/:id/role', async (req: Request, res: Response) => {
+  if (!supabase) return res.status(503).json({ error: 'Authentication service is unavailable.' });
+  const parsed = RoleUpdateSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: 'Role must be admin or user.' });
+  try {
+    const { data: lookup, error: lookupError } = await supabase.auth.admin.getUserById(req.params.id);
+    const target = lookup.user;
+    if (lookupError || !target) return res.status(404).json({ error: 'Account was not found.' });
+    if (!canAssignAppRole(target, parsed.data.role)) {
+      return res.status(403).json({ error: parsed.data.role === 'admin'
+        ? 'Admin can only be assigned to the verified reserved account.'
+        : 'The reserved administrator account cannot be demoted here.' });
+    }
+    const { data: updated, error: updateError } = await supabase.auth.admin.updateUserById(target.id, {
+      app_metadata: { ...target.app_metadata, role: parsed.data.role },
+    });
+    if (updateError || !updated.user) return res.status(503).json({ error: 'Role update failed.' });
+    return res.json({
+      user: {
+        id: updated.user.id,
+        email: updated.user.email || null,
+        email_verified: Boolean(updated.user.email_confirmed_at),
+        role: getAppRole(updated.user),
+      },
+    });
+  } catch {
+    return res.status(503).json({ error: 'Role update failed.' });
   }
 });
 
@@ -156,25 +234,21 @@ protectedApiRouter.get('/incidents/:id/proposals', async (req: Request, res: Res
 });
 
 // POST /api/proposals/:id/approve
-const ApprovalSchema = z.object({
-  approver_email: z.string().email().default('sre-oncall@incidentiq.internal'),
-  approver_name: z.string().default('Elena Rostova (Principal SRE)'),
-  plan_hash_confirmed: z.string(),
-  comments: z.string().optional(),
-});
-
 protectedApiRouter.post('/proposals/:id/approve', async (req: Request, res: Response) => {
-  const parsed = ApprovalSchema.safeParse(req.body);
+  const parsed = ApprovalPayloadSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Validation failed', details: parsed.error.format() });
   }
 
   try {
+    const identity = res.locals.authUser as AuthIdentity;
+    const actor = getAuthenticatedApprovalActor(identity);
+    if (!actor) return res.status(403).json({ error: 'An authenticated account email is required to approve a proposal.' });
     const approval = await orchestrator.submitApproval(
       req.params.id,
       'approved',
-      parsed.data.approver_email,
-      parsed.data.approver_name,
+      actor.email,
+      actor.name,
       parsed.data.plan_hash_confirmed,
       parsed.data.comments
     );
@@ -186,17 +260,20 @@ protectedApiRouter.post('/proposals/:id/approve', async (req: Request, res: Resp
 
 // POST /api/proposals/:id/reject
 protectedApiRouter.post('/proposals/:id/reject', async (req: Request, res: Response) => {
-  const parsed = ApprovalSchema.safeParse(req.body);
+  const parsed = ApprovalPayloadSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Validation failed', details: parsed.error.format() });
   }
 
   try {
+    const identity = res.locals.authUser as AuthIdentity;
+    const actor = getAuthenticatedApprovalActor(identity);
+    if (!actor) return res.status(403).json({ error: 'An authenticated account email is required to reject a proposal.' });
     const approval = await orchestrator.submitApproval(
       req.params.id,
       'rejected',
-      parsed.data.approver_email,
-      parsed.data.approver_name,
+      actor.email,
+      actor.name,
       parsed.data.plan_hash_confirmed,
       parsed.data.comments
     );
@@ -208,20 +285,22 @@ protectedApiRouter.post('/proposals/:id/reject', async (req: Request, res: Respo
 
 // POST /api/proposals/:id/execute
 const ExecuteSchema = z.object({
-  executed_by: z.string().default('SRE Operational Sandbox'),
   forceFailure: z.boolean().optional(),
   forceVerificationFail: z.boolean().optional(),
-});
+}).strict();
 
 protectedApiRouter.post('/proposals/:id/execute', async (req: Request, res: Response) => {
   const parsed = ExecuteSchema.safeParse(req.body || {});
+  if (!parsed.success) return res.status(400).json({ error: 'Execution options are invalid.' });
   try {
+    const identity = res.locals.authUser as AuthIdentity;
+    if (!identity.email) return res.status(403).json({ error: 'A verified account email is required to execute sandbox actions.' });
     const result = await orchestrator.executeRemediation(
       req.params.id,
-      parsed.success ? parsed.data.executed_by : 'SRE Operational Sandbox',
+      identity.email,
       {
-        forceFailure: parsed.success ? parsed.data.forceFailure : false,
-        forceVerificationFail: parsed.success ? parsed.data.forceVerificationFail : false,
+        forceFailure: parsed.data.forceFailure,
+        forceVerificationFail: parsed.data.forceVerificationFail,
       }
     );
     res.json(result);

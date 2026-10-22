@@ -10,6 +10,7 @@ import { runGeminiValidationTests } from './gemini.test.ts';
 import { runNavigationTests } from './navigation.test.ts';
 import { setGeminiTestMode } from '../agent/gemini.ts';
 import { fetchAllAudit, fetchIncidents, fetchRunbooks, createIncident } from '../services/api.ts';
+import { runAuthorizationTests } from './authorization.test.ts';
 
 export interface TestResultItem {
   id: string;
@@ -33,7 +34,7 @@ export interface AutomatedTestReport {
 }
 
 async function runAutomatedTestsInMemory(): Promise<AutomatedTestReport> {
-  const results: TestResultItem[] = [...await runGeminiValidationTests(), ...runNavigationTests()];
+  const results: TestResultItem[] = [...await runGeminiValidationTests(), ...runNavigationTests(), ...await runAuthorizationTests()];
 
   // Reset store to pristine state before starting tests
   stateStore.reset();

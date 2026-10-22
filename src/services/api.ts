@@ -170,8 +170,6 @@ export async function approveProposal(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      approver_email: 'sre-oncall@incidentiq.internal',
-      approver_name: 'Elena Rostova (Principal SRE)',
       plan_hash_confirmed: confirmedPlanHash,
       comments,
     }),
@@ -192,8 +190,6 @@ export async function rejectProposal(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      approver_email: 'sre-oncall@incidentiq.internal',
-      approver_name: 'Elena Rostova (Principal SRE)',
       plan_hash_confirmed: confirmedPlanHash,
       comments,
     }),
@@ -213,7 +209,6 @@ export async function executeProposal(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      executed_by: 'SRE IncidentIQ Sandbox Runtime',
       forceFailure: options?.forceFailure || false,
       forceVerificationFail: options?.forceVerificationFail || false,
     }),
