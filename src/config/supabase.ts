@@ -75,7 +75,7 @@ export async function verifySupabaseDatabase(): Promise<{
   return { configured: true, connected: databaseReady, url: cleanUrl, tables_found, tables_missing, diagnostic: diagnosticMessage };
 }
 
-if (supabaseClient) {
+if (supabaseClient && process.env.INCIDENTIQ_AUTOMATED_TESTS !== 'true') {
   verifySupabaseDatabase().then((result) => {
     if (!result.connected) console.warn('[IncidentIQ] Supabase schema check:', result.diagnostic);
   }).catch(() => {

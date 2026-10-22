@@ -40,7 +40,7 @@ const capabilities = [
 ];
 
 export const Homepage: React.FC = () => (
-  <div className="home-shell min-h-screen overflow-hidden bg-[#07111F] text-[#EAF1FB] selection:bg-[#9273FF]/35 selection:text-white">
+  <div className="home-shell min-h-screen overflow-hidden bg-[#F4F8FC] text-[#17324D] selection:bg-[#2677C9]/35 selection:text-white">
     <a className="home-skip-link" href="#main-content">Skip to content</a>
 
     <header className="home-header">
@@ -48,8 +48,8 @@ export const Homepage: React.FC = () => (
         <a href="/" className="home-brand" aria-label="IncidentIQ AI home">
           <span className="home-brand-mark"><ActivityMark /></span>
           <span className="leading-tight">
-            <span className="block text-[15px] font-semibold tracking-tight text-white">IncidentIQ <span className="text-[#8E7BFF]">AI</span></span>
-            <span className="mt-1 block text-[10px] tracking-[0.14em] text-[#8795AA]">INCIDENT RESOLUTION PLATFORM</span>
+            <span className="block text-[15px] font-semibold tracking-tight text-white">IncidentIQ <span className="text-[#2677C9]">AI</span></span>
+            <span className="mt-1 block text-[10px] tracking-[0.14em] text-[#718096]">INCIDENT RESOLUTION PLATFORM</span>
           </span>
         </a>
 
@@ -90,7 +90,7 @@ export const Homepage: React.FC = () => (
           </div>
           <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-[#94A2B7]">
             <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[#47C5B0]" /> Human approval required</span>
-            <span className="inline-flex items-center gap-2"><Database className="h-4 w-4 text-[#58C9E8]" /> Sandbox-only actions</span>
+            <span className="inline-flex items-center gap-2"><Database className="h-4 w-4 text-[#2677C9]" /> Sandbox-only actions</span>
           </div>
         </div>
 
@@ -100,33 +100,33 @@ export const Homepage: React.FC = () => (
           <div className="home-console-card">
             <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
               <div className="flex items-center gap-3">
-                <span className="grid h-9 w-9 place-items-center rounded-xl border border-[#9273FF]/25 bg-[#9273FF]/10 text-[#A493FF]"><ActivityMark /></span>
-                <div><div className="text-xs font-semibold text-white">Response workspace</div><div className="mt-1 text-[10px] text-[#8291A8]">CONTROLLED INCIDENT FLOW</div></div>
+                <span className="grid h-9 w-9 place-items-center rounded-xl border border-[#2677C9]/25 bg-[#2677C9]/10 text-[#2677C9]"><ActivityMark /></span>
+                <div><div className="text-xs font-semibold text-white">Response workspace</div><div className="mt-1 text-[10px] text-[#4A6176]">CONTROLLED INCIDENT FLOW</div></div>
               </div>
               <span className="home-status"><span /> SANDBOX</span>
             </div>
 
             <div className="space-y-3 p-5">
               <div className="home-incident-row">
-                <span className="home-incident-icon text-[#FF7E87]"><Database className="h-4 w-4" /></span>
-                <span className="min-w-0 flex-1"><span className="block truncate text-xs font-medium text-white">Database pool exhaustion</span><span className="mt-1 block text-[10px] text-[#8291A8]">INC-2026-8841 · auth-payment-gateway</span></span>
+                <span className="home-incident-icon text-[#D95757]"><Database className="h-4 w-4" /></span>
+                <span className="min-w-0 flex-1"><span className="block truncate text-xs font-medium text-white">Database pool exhaustion</span><span className="mt-1 block text-[10px] text-[#4A6176]">INC-2026-8841 · auth-payment-gateway</span></span>
                 <span className="home-severity severity-critical">CRITICAL</span>
               </div>
               <div className="home-incident-row">
-                <span className="home-incident-icon text-[#FFB46B]"><Zap className="h-4 w-4" /></span>
-                <span className="min-w-0 flex-1"><span className="block truncate text-xs font-medium text-white">HTTP 500 after config deploy</span><span className="mt-1 block text-[10px] text-[#8291A8]">INC-2026-9024 · edge-routing-service</span></span>
+                <span className="home-incident-icon text-[#875D12]"><Zap className="h-4 w-4" /></span>
+                <span className="min-w-0 flex-1"><span className="block truncate text-xs font-medium text-white">HTTP 500 after config deploy</span><span className="mt-1 block text-[10px] text-[#4A6176]">INC-2026-9024 · edge-routing-service</span></span>
                 <span className="home-severity severity-high">HIGH</span>
               </div>
             </div>
 
-            <div className="mx-5 mb-5 rounded-xl border border-[#58C9E8]/15 bg-[#58C9E8]/[0.055] p-4">
+            <div className="mx-5 mb-5 rounded-xl border border-[#2677C9]/15 bg-[#2677C9]/[0.055] p-4">
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-xs font-medium text-[#DCEAF7]"><Sparkles className="h-4 w-4 text-[#58C9E8]" /> Investigation evidence</div>
-                <span className="text-[10px] text-[#7F91A8]">RETRIEVED SOURCES</span>
+                <div className="flex items-center gap-2 text-xs font-medium text-[#17324D]"><Sparkles className="h-4 w-4 text-[#2677C9]" /> Investigation evidence</div>
+                <span className="text-[10px] text-[#4A6176]">RETRIEVED SOURCES</span>
               </div>
               <div className="mt-4 space-y-2.5">
-                <div className="home-evidence-line"><span className="home-evidence-dot bg-[#58C9E8]" /><span>Connection acquisition timeout</span><span className="ml-auto text-[#58C9E8]">LOG</span></div>
-                <div className="home-evidence-line"><span className="home-evidence-dot bg-[#A493FF]" /><span>Validated service runbook</span><span className="ml-auto text-[#A493FF]">GUIDE</span></div>
+                <div className="home-evidence-line"><span className="home-evidence-dot bg-[#2677C9]" /><span>Connection acquisition timeout</span><span className="ml-auto text-[#2677C9]">LOG</span></div>
+                <div className="home-evidence-line"><span className="home-evidence-dot bg-[#2677C9]" /><span>Validated service runbook</span><span className="ml-auto text-[#2677C9]">GUIDE</span></div>
               </div>
             </div>
 
@@ -158,7 +158,7 @@ export const Homepage: React.FC = () => (
         <ol className="home-stage-grid mt-12">
           {stages.map(({ number, title, detail, icon: Icon }, index) => (
             <li className="home-stage-card" key={number}>
-              <div className="flex items-center justify-between"><span className="home-stage-number">{number}</span><Icon className="h-5 w-5 text-[#8C7AFF]" aria-hidden="true" /></div>
+              <div className="flex items-center justify-between"><span className="home-stage-number">{number}</span><Icon className="h-5 w-5 text-[#2677C9]" aria-hidden="true" /></div>
               <h3>{title}</h3><p>{detail}</p>
               {index < stages.length - 1 && <ArrowRight className="home-stage-arrow hidden xl:block" aria-hidden="true" />}
             </li>
@@ -226,7 +226,7 @@ export const Homepage: React.FC = () => (
       <div className="home-container flex flex-col gap-5 py-7 sm:flex-row sm:items-center sm:justify-between">
         <a href="/" className="home-brand" aria-label="IncidentIQ AI home">
           <span className="home-brand-mark small"><ActivityMark /></span>
-          <span className="text-sm font-semibold text-white">IncidentIQ <span className="text-[#8E7BFF]">AI</span></span>
+          <span className="text-sm font-semibold text-white">IncidentIQ <span className="text-[#2677C9]">AI</span></span>
         </a>
         <p>AI-assisted incident operations with human approval and sandbox-only remediation.</p>
         <a href={controlRoomHref} className="home-footer-link">Open Control Room <ArrowRight className="h-3.5 w-3.5" /></a>
